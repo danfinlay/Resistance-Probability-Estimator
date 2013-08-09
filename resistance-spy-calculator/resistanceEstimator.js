@@ -52,7 +52,8 @@ Game.prototype.updateOdds = function(){
 
 }
 
-function Mission ( selectedPlayers, failCount ){
+function Mission ( leader, selectedPlayers, failCount ){
+	this.leader = leader;
 	this.players = selectedPlayers;
 	this.passed = failCount === 0;
 	this.votesAgainst = failCount;
@@ -92,8 +93,8 @@ function generateRules( numberOfPlayers ){
 	};
 }
 
-Game.prototype.missionComplete = function( chosenOnes, failCount ){
-	var mission = new Mission( chosenOnes, failCount );
+Game.prototype.missionComplete = function( leader, chosenOnes, failCount ){
+	var mission = new Mission( leader, chosenOnes, failCount );
 
 	this.possibilities.forEach(function(possibility){
 		if(!isPossible(possibility, mission, failCount)){

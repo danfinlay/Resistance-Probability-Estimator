@@ -34,7 +34,9 @@ $('#recordMissionButton').click(function(e){
 	});
 	console.log("thesePlayers checked: "+JSON.stringify(thesePlayers));
 
-	game.missionComplete( thesePlayers, failsPlayed );
+	var leader = unescape($('.leaderRadio').val());
+
+	game.missionComplete( leader, thesePlayers, failsPlayed );
 	view.updateGameView();
 });
 },{"./resistanceEstimator":3,"./view":5,"underscore":2}],2:[function(require,module,exports){
@@ -1340,7 +1342,8 @@ Game.prototype.updateOdds = function(){
 
 }
 
-function Mission ( selectedPlayers, failCount ){
+function Mission ( leader, selectedPlayers, failCount ){
+	this.leader = leader;
 	this.players = selectedPlayers;
 	this.passed = failCount === 0;
 	this.votesAgainst = failCount;
@@ -1380,8 +1383,8 @@ function generateRules( numberOfPlayers ){
 	};
 }
 
-Game.prototype.missionComplete = function( chosenOnes, failCount ){
-	var mission = new Mission( chosenOnes, failCount );
+Game.prototype.missionComplete = function( leader, chosenOnes, failCount ){
+	var mission = new Mission( leader, chosenOnes, failCount );
 
 	this.possibilities.forEach(function(possibility){
 		if(!isPossible(possibility, mission, failCount)){
@@ -1530,14 +1533,36 @@ ViewUpdater.prototype.renderNames = function(players){
 	var newHtml = '';
 	players.forEach(function(player){
 		newHtml+= '<tr><td>'+player+'</td><td>0</td></td><td>N/A</td><td>';
-		newHtml+='<input type="radio" name="leaderRadio" player="'+escape(player);
+		newHtml+='<input type="radio" name="leaderRadio" value="'+escape(player);
 		newHtml+='"></td><td><input type="checkbox" class="chosenCheckbox" player="'+escape(player)+'"></td></tr>';
 	})
 	$('#playerTable').html(newHtml);
 }
 
 ViewUpdater.prototype.updateGameView = function(){
-	
+
+	//Update missions:
+	var newHtml = '';
+	for(var i = 0, len = this.game.missions.length; i < len; i++){
+		var color = this.game.missions[i].passed ? 'success' : 'danger';
+		newHtml+='<tr class="'+color+'"><td>'+i+'</td><td>'+this.game.missions[i].leader+'</td><td>';
+		newHtml+=JSON.stringify(this.game.missions[i].players)+'</td><td>';
+		newHtml+=this.game.missions[i].votesAgainst+'</td></tr>';
+	}
+	$('#missionTable').html(newHtml);
+
+	//Update possibilities:
+	newHtml = '';
+	for(var i = 0, len = this.game.possibilities.length; i < len; i++){
+		if(this.game.possibilities.odds > 0){
+			newHtml+='<tr>';
+			for(var x = 0; length = this.game.possibilities[i].spies.length; x++){
+				newHtml+='<td>'+this.game.possibilities[i].spies[x].name+'</td>';
+			}	
+			newHtml+='</tr>';
+		}
+	}
+	$('#possibilityTable').html(newHtml);
 }
 
 module.exports = function(){

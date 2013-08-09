@@ -33,6 +33,8 @@ $('#recordMissionButton').click(function(e){
 	});
 	console.log("thesePlayers checked: "+JSON.stringify(thesePlayers));
 
-	game.missionComplete( thesePlayers, failsPlayed );
+	var leader = unescape($('.leaderRadio').val());
+
+	game.missionComplete( leader, thesePlayers, failsPlayed );
 	view.updateGameView();
 });
