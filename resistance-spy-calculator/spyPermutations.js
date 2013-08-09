@@ -52,8 +52,8 @@ exports.duplicates = function duplicates(arrangement, existantLists, spyCount){
     }
     for(var i = 0, listCount = existantLists.length; i < listCount; i++){
         var theseSpies = [];
-        for(var i = 0; i < spyCount; i++){
-            theseSpies.push(arrangement[i]);
+        for(var x = 0; x < spyCount; x++){
+            theseSpies.push(existantLists[i][x]);
         }
         if(exports.isEqArrays(spies, theseSpies)){
             return true;
