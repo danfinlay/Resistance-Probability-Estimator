@@ -1,5 +1,46 @@
+var generate = function generate(playerList, spyCount){
+
+    var raw = exports.permuteRaw(playerList, spyCount);
+
+    var reduced = reduceList(raw, spyCount);
+    
+    return reduced;
+}
+exports.generate = generate;
+
+var reduceList = function (rawList, spyCount){
+    var result = [];
+    rawList.forEach(function(permutation){
+
+        var spies = [];
+        for(var i = 0; i < spyCount; i++){
+            spies.push(permutation[i]);
+        }
+
+        var permutation = {
+            odds: 1,
+            spies: spies
+        }
+        result.push(permutation);
+    })
+    return result;
+}
+exports.reduceList = reduceList;
+
+var permuteRaw = function permuteRaw(playerList, spyCount){
+    var allArrangements = permute(playerList);
+    var realArrangements = [];
+    allArrangements.forEach(function(arrangement){
+        if(!duplicates(arrangement, realArrangements, spyCount)){
+            realArrangements.push(arrangement);
+        }
+    })
+    return realArrangements;
+}
+exports.permuteRaw = permuteRaw;
+
 var permArr = [], usedChars = [], chorePermutations = [], workshopPermutations=[];
-exports.permute = function permute(input) {
+var permute = function permute(input) {
     var i, ch;
     for (i = 0; i < input.length; i++) {
         ch = input.splice(i, 1)[0];
@@ -13,39 +54,9 @@ exports.permute = function permute(input) {
     }
     return permArr
 };
+exports.permute = permute;
 
-exports.generate = function generate(playerList, spyCount){
-    var raw = permuteRaw(playerList, spyCount);
-    var result = [];
-    raw.forEach(function(permutation){
-
-        var spies = [];
-        for(var i = 0; i < spyCount; i++){
-            spies.push(permutation[spyCount]);
-        }
-
-        var permutation = {
-            odds: spyCount / playerList.length,
-            spies: spies
-        }
-        result.push(permutation);
-    })
-}
-
-exports.permuteRaw = function permuteRaw(playerList, spyCount){
-
-    var allArrangements = permute(playerList);
-    var realArrangements = [];
-    allArrangements.forEach(function(arrangement){
-        if(!duplicates(arrangement, realArrangements, spyCount)){
-            realArrangements.push(arrangement);
-        }
-    })
-    return realArrangements;
-
-}
-
-exports.duplicates = function duplicates(arrangement, existantLists, spyCount){
+var duplicates = function duplicates(arrangement, existantLists, spyCount){
     var spies = [];
     for(var i = 0; i < spyCount; i++){
         spies.push(arrangement[i]);
@@ -61,8 +72,9 @@ exports.duplicates = function duplicates(arrangement, existantLists, spyCount){
     }
     return false;
 }
+exports.duplicates = duplicates;
 
-exports.isEqArrays = function isEqArrays(arr1, arr2) {
+var isEqArrays = function isEqArrays(arr1, arr2) {
   if ( arr1.length !== arr2.length ) {
     return false;
   }
@@ -73,6 +85,7 @@ exports.isEqArrays = function isEqArrays(arr1, arr2) {
   }
   return true;
 }
+exports.isEqArrays = isEqArrays;
 
 function inArray(arr, b){
     for(var i = 0, len = arr.length; i < len; i++){
