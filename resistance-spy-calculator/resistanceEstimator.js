@@ -13,18 +13,19 @@ function Game( players ){
 	this.missions = [];
 	this.rules = generateRules( players.length );
 
-	this.spyCount = this.rules.spies.length;
+	var spyCount = this.rules.spies;
+	this.spyCount = spyCount;
 
 	this.possibilities = spyPermutations.generate(this.players, this.spyCount);
 
 	this.players.forEach(function(player){
-		player.spyOdds = this.rules.spies / this.players.length;
+		player.spyOdds = spyCount / players.length;
 	});
 
 	this.possibilities = spyPermutations.generate(this.players, this.spyCount);
 }
 
-Game.prototype.updateOdds(){
+Game.prototype.updateOdds = function(){
 
 	//Reset player odds
 	this.players.forEach(function(player){
@@ -57,7 +58,7 @@ function Mission ( selectedPlayers, failCount ){
 	this.votesAgainst = failCount;
 }
 
-Mission.prototype.wasIn( playerName ){
+Mission.prototype.wasIn = function( playerName ){
 	this.players.forEach( function( player ){
 		if( player.name === playerName ){
 			return true;
@@ -91,7 +92,7 @@ function generateRules( numberOfPlayers ){
 	};
 }
 
-Game.prototype.missionComplete( chosenOnes, failCount ){
+Game.prototype.missionComplete = function( chosenOnes, failCount ){
 	var mission = new Mission( chosenOnes, failCount );
 
 	this.possibilities.forEach(function(possibility){
@@ -99,7 +100,7 @@ Game.prototype.missionComplete( chosenOnes, failCount ){
 			possibility.odds = 0;
 		}
 	})
-	missions.push( mission );
+	this.missions.push( mission );
 };
 
 function isPossible( possibility, mission, failCount ){
