@@ -1,5 +1,6 @@
 var players = [];
 var spyPermutations = require('./spyPermutations');
+var _ = require('underscore');
 
 function Player(playerName){
 	this.name = playerName;
@@ -7,7 +8,7 @@ function Player(playerName){
 
 function Game( players ){
 
-	this.players = players;
+	this.players = [];
 	this.playerCount = this.players.length;
 
 	this.missions = [];
@@ -16,13 +17,16 @@ function Game( players ){
 	var spyCount = this.rules.spies;
 	this.spyCount = spyCount;
 
-	this.possibilities = spyPermutations.generate(this.players, this.spyCount);
+	for(var i = 0, len = players.length; i < len; i++){
+		this.players.push({
+			name: players[i],
+			spyOdds: spyCount / len
+		});
+	}
 
-	this.players.forEach(function(player){
-		player.spyOdds = spyCount / players.length;
-	});
+	this.possibilities = spyPermutations.generate(players, this.spyCount);
+	console.log("New game has "+this.possibilities.length+" possibilities.");
 
-	this.possibilities = spyPermutations.generate(this.players, this.spyCount);
 }
 
 Game.prototype.updateOdds = function(){
@@ -35,13 +39,19 @@ Game.prototype.updateOdds = function(){
 	var possibilityCounter = 0;
 
 	//Add 1 to each player's spy odds for each scenerio in which they are a spy:
-	this.possibilities.forEach(function(possibility){
-		possibilityCounter += possibility.odds;
+	for(var y = 0; y < this.possibilities.length; y++){
+		possibilityCounter += this.possibilities[y].odds;
 
-		possibility.spies.forEach(function(possibleSpy){
-			possibleSpy.spyOdds += possibility.odds;
-		});
-	});
+		for( var x = 0, length = this.possibilities[y].spies.length; x < length; x++){
+			//Find that spy in the main array to update them b/c silly JS pass by reference is shallow.
+			for(var i = 0, len = this.players.length; i < len; i++){
+				if(this.players[i].name === this.possibilities[y].spies[x].name){
+					this.players[i].spyOdds += this.possibilities[y].odds;
+				}
+			}
+
+		}
+	}
 
 	//Normalize odds:
 	this.players.forEach(function(player){
@@ -49,12 +59,11 @@ Game.prototype.updateOdds = function(){
 	})
 
 	return this.players;
-
 }
 
 function Mission ( leader, selectedPlayers, failCount ){
 	this.leader = leader;
-	this.players = selectedPlayers;
+	this.players = selectedPlayers.slice(0);
 	this.passed = failCount === 0;
 	this.votesAgainst = failCount;
 }
@@ -95,35 +104,67 @@ function generateRules( numberOfPlayers ){
 
 Game.prototype.missionComplete = function( leader, chosenOnes, failCount ){
 	var mission = new Mission( leader, chosenOnes, failCount );
-
+	console.log("New mission made");
 	this.possibilities.forEach(function(possibility){
+		console.log("Is this possible: "+JSON.stringify(possibility))
 		if(!isPossible(possibility, mission, failCount)){
 			possibility.odds = 0;
 		}
-	})
+	})	
+
+	this.updateOdds();
+	
+	console.log("About to push the mission...");
 	this.missions.push( mission );
 };
 
 function isPossible( possibility, mission, failCount ){
 	var inMissionCount = 0;
 	var notInMissionCount = 0;
-
+	// console.log("Is possible? "+JSON.stringify(possibility));
 	possibility.spies.forEach(function(spy){
-		if(inArray(spy, mission.players)){
+		//console.log("For thsi spiy...");
+		console.log("Checking if "+spy.name+" is in "+JSON.stringify(mission.players));
+		if(inArray(spy.name, mission.players)){
+			//console.log("Mission count plus!");
 			inMissionCount++;
 		}else{
+			//console.log("Mission count minus!");
 			notInMissionCount++;
 		}
 	})
+	console.log("Is the proposed "+inMissionCount+" spies less than "+failCount+"?");
+	if(!(inMissionCount >= failCount)){
+		console.log("Impossible!")
+	}else{
+		console.log("Possible.");
+	}
 	return inMissionCount >= failCount;
 }
 
 function inArray(o, arr){
-	for (var i = 0, len = arr.length; 0 < len; i++){
-		if(o === arr[i])
+	for (var i = 0, len = arr.length; i < len; i++){
+		if(o === arr[i]){
 			return true;
+		}
 	}
 	return false;
+}
+
+Game.prototype.generatePossibilityView = function(){
+	var newHtml = '';
+	console.log("Considering the possibilities... "+this.possibilities.length);
+	for(var i = 0, len = this.possibilities.length; i < len; i++){
+		console.log("Possibility: "+JSON.stringify(this.possibilities[i]));
+		if(this.possibilities[i].odds > 0){
+			newHtml+='<tr>';
+			for(var x = 0, length = this.possibilities[i].spies.length; x < length; x++){
+				newHtml+='<td>'+this.possibilities[i].spies[x].name+'</td>';
+			}	
+			newHtml+='</tr>';
+		}
+	}
+	return newHtml;
 }
 
 module.exports = function newGame (playerNameArray){

@@ -41,7 +41,7 @@
 				<h1>
 					<span>Resistance Probability Estimator</span>
 				</h1>
-				<span class="lead">Use Statistics to play the board game "The Resistance", and make everyone wonder if you're a Spy or a Robot.</span>
+				<span class="lead">Use Statistics to play the board game <a href="http://en.wikipedia.org/wiki/The_Resistance_(game)">The Resistance</a>, and make everyone wonder if you're a Spy or a Robot.</span>
 				<h1>
 					<a class="btn btn-danger btn-large" href="#" id="newGameButton">New Game »</a>
 				</h1>
@@ -105,11 +105,7 @@
 					<div id="newPlayerForm">
 						<fieldset>
 							 <legend>Add Player</legend> 
-							 <label>Player Name</label>
-							 <input type="text" placeholder="Keyser Soze" id="playerName"> 
-							 <span class="help-block">
-							 	Once all players are added, we can begin!
-							 </span> 
+							 <input type="text" placeholder="Enter player name here" id="playerName"> 
 							 <button id="newPlayerButton" class="btn">Add Player to Game</button>
 						</fieldset>
 					</div>
@@ -155,7 +151,7 @@
 			<h3>
 				Possibilities Remaining
 			</h3>
-			<table class="table possibilityTable">
+			<table class="table" id="possibilityTable">
 				<tbody>
 					<tr>
 						<td>Joe</td>
@@ -167,6 +163,23 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Mission Aborted</h4>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
 	<script type="text/javascript" src="js/bundle.js"></script>
 </body>

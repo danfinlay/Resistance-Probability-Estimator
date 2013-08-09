@@ -13,30 +13,33 @@ ViewUpdater.prototype.renderNames = function(players){
 	$('#playerTable').html(newHtml);
 }
 
-ViewUpdater.prototype.updateGameView = function(){
+ViewUpdater.prototype.updateGameView = function( game ){
 
 	//Update missions:
 	var newHtml = '';
-	for(var i = 0, len = this.game.missions.length; i < len; i++){
-		var color = this.game.missions[i].passed ? 'success' : 'danger';
-		newHtml+='<tr class="'+color+'"><td>'+i+'</td><td>'+this.game.missions[i].leader+'</td><td>';
-		newHtml+=JSON.stringify(this.game.missions[i].players)+'</td><td>';
-		newHtml+=this.game.missions[i].votesAgainst+'</td></tr>';
+	for(var i = 0, len = game.missions.length; i < len; i++){
+		var color = game.missions[i].passed ? 'success' : 'danger';
+		newHtml+='<tr class="'+color+'"><td>'+(i+1)+'</td><td>'+game.missions[i].leader+'</td><td>';
+		newHtml+=JSON.stringify(game.missions[i].players)+'</td><td>';
+		newHtml+=game.missions[i].votesAgainst+'</td></tr>';
 	}
 	$('#missionTable').html(newHtml);
 
 	//Update possibilities:
-	newHtml = '';
-	for(var i = 0, len = this.game.possibilities.length; i < len; i++){
-		if(this.game.possibilities.odds > 0){
-			newHtml+='<tr>';
-			for(var x = 0; length = this.game.possibilities[i].spies.length; x++){
-				newHtml+='<td>'+this.game.possibilities[i].spies[x].name+'</td>';
-			}	
-			newHtml+='</tr>';
-		}
-	}
-	$('#possibilityTable').html(newHtml);
+	// var newHtml = '';
+	// console.log("Considering the possibilities... "+game.possibilities.length);
+	// for(var i = 0, len = game.possibilities.length; i < len; i++){
+	// 	console.log("Possibility: "+JSON.stringify(game.possibilities[i]));
+	// 	if(game.possibilities.odds > 0){
+	// 		newHtml+='<tr>';
+	// 		for(var x = 0, length = game.possibilities[i].spies.length; x < length; x++){
+	// 			newHtml+='<td>'+game.possibilities[i].spies[x].name+'</td>';
+	// 		}	
+	// 		newHtml+='</tr>';
+	// 	}
+	// }
+	// console.log("Possibility table: "+newHtml);
+	$('#possibilityTable').html(game.generatePossibilityView());
 }
 
 module.exports = function(){

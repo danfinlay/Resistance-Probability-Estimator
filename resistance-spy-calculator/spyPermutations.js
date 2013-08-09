@@ -1,9 +1,9 @@
 var generate = function generate(playerList, spyCount){
-
+    console.log("Received "+JSON.stringify(playerList)+" and "+spyCount);
     var raw = exports.permuteRaw(playerList, spyCount);
-
+    console.log("Raw list is: "+JSON.stringify(raw));
     var reduced = reduceList(raw, spyCount);
-    
+    console.log("Reduced is: "+JSON.stringify(reduced));
     return reduced;
 }
 exports.generate = generate;
