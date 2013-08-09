@@ -1,4 +1,5 @@
 var players = [];
+var spyPermutations = require('./spyPermutations');
 
 function Player(playerName){
 	this.name = playerName;
@@ -11,6 +12,10 @@ function Game( players ){
 
 	this.missions = [];
 	this.rules = generateRules( players.length );
+
+	this.spyCount = this.rules.spies.length;
+
+	this.possibilities = [];
 }
 
 function Mission ( selectedPlayers, passed, failCount ){
@@ -53,6 +58,8 @@ Game.prototype.initialOdds(){
 	this.players.forEach(function(player){
 		player.spyOdds = this.rules.spies / this.players.length;
 	});
+
+	this.possibilities = spyPermutations.generate(this.players, this.spyCount);
 }
 
 Round.prototype.wasIn( playerName ){
@@ -64,7 +71,7 @@ Round.prototype.wasIn( playerName ){
 	return false;
 }
 
-Game.prototype.oddsForRound( roundNumber ){
+Game.prototype.oddsToDate( roundNumber ){
 
 	var round = this.missions [ roundNumber - 1 ];
 	var playersInMission = round.players.length;
@@ -75,3 +82,4 @@ Game.prototype.oddsForRound( roundNumber ){
 	var oddsForMissionMembers = round.votesAgainst / playersInMission;
 	var oddsForNonMissionMembers = 
 
+}
